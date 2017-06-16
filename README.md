@@ -9,8 +9,10 @@ From the perspective of CraftBeerPi, you are able to display current temperature
 This initial release of the plugin is read only.  It will allow viewing of all data mentioned above, but will not allow changes to settings or device states to be made.  Turning on pumps or other devices, changing set points, and receiving alerts or notifications is planned for later releases.
 
 For more info, visit the following sites:
-    - [Blink.cc](http://www.blink.cc/)
-    - [CraftBeerPi.com](http://web.craftbeerpi.com/)
+
+- Blynk website: [Blink.cc](http://www.blink.cc/)
+
+- CraftBeerPi website: [CraftBeerPi.com](http://web.craftbeerpi.com/)
 
 ## Screenshots
 
@@ -52,13 +54,15 @@ To begin using this plugin, two steps are required.  First we will install the m
 
 ## Pin Configuration
 
-The term Pin is used in Blynk to indicate a physical or virtual pin on a hardware device, usually referred to as GPIO.  When a widget has been set to the same Pin that the hardware device is using, the widget will begin displaying the data being sent to Blynk from that device.  Use the following table to help correspond the features in CraftBeerPi with the Pins in Blynk.
+The term Pin is used in Blynk to indicate a physical or virtual pin on a hardware device, usually referred to as GPIO.  When a widget has been set to the same Pin that the hardware device is using, the widget will begin displaying the data being sent to Blynk from that device.  To figure out which Pins to use for which Sensors, Kettles, etc. in CraftBeerPi, look at the order in which they appear in the **Hardware** screen of CraftBeerPi, and then add that number to the Offset in the following table.
 
-| CraftBeerPi Name | Blynk Pin(s) |
-| ---------------- | --------- |
-| Last Updated     | V0 |
-| Current Step     | V1 |
-| Sensors          | V11 - V30 |
-| Kettle Setpoints | V31 - V50 |
-| Fermenter Setpoints | V51 - V70 |
-| Actors           | V71 - 90 |
+For example, Sensor #1 in CraftBeerPi will correspond with Pin V11 ( 10 + 1 ).  Kettle #3 Setpoint will correspond with Pin V33 ( 30 + 3 ).
+
+| CraftBeerPi Name | Blynk Pin(s) | Offset | More Info |
+| ---------------- | ------------ | ------ | --------- |
+| Last Updated     | V0           | N/A    | Shows the last time CraftBeerPi sent data to Blynk |
+| Current Step     | V1           | N/A    | Shows the current brewing step, with the timer value if present |
+| Sensors          | V11 - V30    | 10     | Temperature sensor readings |
+| Kettle Setpoints | V31 - V50    | 30     | Kettle temperature set points |
+| Fermenter Setpoints | V51 - V70 | 50     | Fermenter temperature set points |
+| Actors           | V71 - 90     | 70     | The on/off state of pumps, elements, agitators, etc. |
