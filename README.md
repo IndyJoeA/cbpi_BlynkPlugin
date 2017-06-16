@@ -10,7 +10,7 @@ This initial release of the plugin is read only.  It will allow viewing of all d
 
 For more info, visit the following sites:
 
-- Blynk website: [Blink.cc](http://www.blink.cc/)
+- Blynk website: [Blynk.cc](http://www.blynk.cc/)
 
 - CraftBeerPi website: [CraftBeerPi.com](http://web.craftbeerpi.com/)
 
