@@ -34,9 +34,10 @@ To begin using this plugin, two steps are required.  First we will install the m
     - You should receive an email from Blynk with your Authentication Token. Keep this handy as we will need it later for use in CraftBeerPi
 3. You will now be looking at a blank canvas.  This is where you will design your app.  Swipe from right-to-left and you will see the **Widget Box**, which is a list of all the display options you can pick from for your app.  When you click on one it will be added to your app, and the cost listed will come out of your energy meter.  You can return a widget if you decide you don't like it by dragging it up to the top of the screen until you see a recycle icon.
 4. Place several widgets on the screen to represent the data you want to see from your brewing setup.  Here are some examples of widgets you can use for different data types in CraftBeerPi:
-    - **Temperatures:**  Guage, Value Display, Labeled Value, LCD, Graph, History Graph
-    - **Set Points:**  Everything for temperatures, plus the Sliders
-    - **Actors (Heating elements, pumps, agitators, etc):**  Button, LED
+    - **Temperatures:**  Guage, Value Display, Labeled Value, Level, LCD, Graph, History Graph
+    - **Set Points:**  Everything for temperatures, plus the Slider
+    - **Actor States (Heating elements, pumps, agitators, etc):**  Button
+    - **Actor Power:** LED, Level, Slider
     - **Current Step Display:**  Value Display, Labeled Value, LCD
     - **Last Updated Display:**  Value Display, Labeled Value, LCD
 5. Once your widgets are placed, you must configure them so they know which data to link to on CraftBeerPi.  When you click on one you will see the settings for that widget.  The settings available will vary for each widget, but here are the most important ones:
@@ -47,7 +48,7 @@ To begin using this plugin, two steps are required.  First we will install the m
     - **Refresh interval:**  It is best to set this to Push, because the Blynk plugin sends data to the Blynk cloud on its own set interval.
 6. Now that your app has been created, it is time to head over to CraftBeerPi to finish the install
 
-### Step 2: CraftBeerPi configuration
+### Step 2: CraftBeerPi Configuration
 
 1. First, make sure you are running the latest version of CraftBeerPi 3.0.  If not, or if you are not sure, you can perform the update by clicking on the **System** menu and then **System**.  Click the **Pull Update** button, and then **Confirm**.  Once you receive a notification that the update was successful, reboot the Raspberry Pi.
 2. Install the Blynk plugin in CraftBeerPi by clicking on the **System** menu and then **Add-on**.  Find the Blynk plugin and click the **Download** button.  When the download is complete, you'll see a notification.  You must now reboot the Raspberry Pi so that the plugin will be loaded into the system.
@@ -67,4 +68,5 @@ For example, Sensor #1 in CraftBeerPi will correspond with Pin V11 ( 10 + 1 ).  
 | Sensors          | V11 - V30    | 10     | Temperature sensor readings |
 | Kettle Setpoints | V31 - V50    | 30     | Kettle temperature set points |
 | Fermenter Setpoints | V51 - V70 | 50     | Fermenter temperature set points |
-| Actors           | V71 - V90    | 70     | The on/off state of pumps, elements, agitators, etc. |
+| Actor States     | V71 - V90    | 70     | The on/off state of actors. Value range: 0 - 1 |
+| Actor Power      | V91 - V109   | 90     | The power level of actors. Value range: 0 - 100 |
