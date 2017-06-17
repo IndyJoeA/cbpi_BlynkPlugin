@@ -1,6 +1,4 @@
 from modules import app, cbpi
-from modules.core.db import get_db
-from modules.config import ConfigView
 from thread import start_new_thread
 import BlynkLib
 import logging
@@ -16,13 +14,12 @@ blynk_current_step = 1
 blynk_sensor_offset = 10
 blynk_kettle_offset = 30
 blynk_fermenter_offset = 50
-blynk_actor_offset = 70
+blynk_actor_state_offset = 70
+blynk_actor_power_offset = 90
 
-def blynkAuth():
+def blynkAuthEstablish():
 	global blynk	
-	if blynk_auth is None:
-		cbpi.notify("Blynk Error", "No Blynk token specified", type="danger", timeout=None)
-	else:				
+	if blynk_auth is not None:
 		blynk = BlynkLib.Blynk(blynk_auth)
 		start_new_thread(blynkConnection, ())
 
@@ -34,26 +31,26 @@ def blynkDB():
 	blynk_auth = cbpi.get_config_parameter("blynk_auth_token", None)
 	if blynk_auth is None:
 		print "INIT BLYNK DB"
-		with app.app_context():
-			db = get_db()
-	
-			with app.open_resource('./plugins/BlynkPlugin/schema.sql', mode='r') as f:
-				db.cursor().executescript(f.read())
-	
-			db.commit()
-		ConfigView.init_cache()
+		cbpi.add_config_parameter("blynk_auth_token", None, "text", "Blynk Authentication Token")
+
+def blynkAuthWarning():
+	if blynk_auth is None:
+		cbpi.notify("Blynk Warning", "No Blynk token specified. Please enter your token in settings.", type="danger", timeout=None)
 
 @cbpi.initalizer(order=8045)
 def init(cbpi):
 	cbpi.app.logger.info("INITIALIZE BLYNK PLUGIN")
 	blynkDB()
-	blynkAuth()
+	blynkAuthWarning()
+	blynkAuthEstablish()
 
-@cbpi.backgroundtask(key="blynk_send_reading", interval=3)
-def blynk_send_reading():
+@cbpi.backgroundtask(key="blynk_task", interval=3)
+def blynk_task():
 	if blynk is not None:
+		# Update Blynk last updated field
 		blynk.virtual_write(blynk_last_updated, time.ctime())
 
+		# Update Blynk current step field
 		step = cbpi.cache.get("active_step")
 		if step is not None:
 			step_text = step.name
@@ -61,14 +58,22 @@ def blynk_send_reading():
 			step_text = "---"
 		blynk.virtual_write(blynk_current_step, step_text)
 
-		for idx, value in cbpi.cache["sensors"].iteritems():			
-			blynk.virtual_write(value.id + blynk_sensor_offset, '{0:.2f}'.format(cbpi.get_sensor_value(value.id)))
+		# Update Blynk sensor readings
+		for count, (key, value) in enumerate(cbpi.cache["sensors"].iteritems(), 1):
+			blynk.virtual_write(count + blynk_sensor_offset, '{0:.2f}'.format(cbpi.get_sensor_value(value.id)))
 
-		for idx, value in cbpi.cache["kettle"].iteritems():
-			blynk.virtual_write(value.id + blynk_kettle_offset, '{0:.2f}'.format(value.target_temp))
+		# Update Blynk kettle setpoints
+		for count, (key, value) in enumerate(cbpi.cache["kettle"].iteritems(), 1):
+			blynk.virtual_write(count + blynk_kettle_offset, '{0:.2f}'.format(value.target_temp))
 
-		for idx, value in cbpi.cache["fermenter"].iteritems():
-			blynk.virtual_write(value.id + blynk_fermenter_offset, '{0:.2f}'.format(value.target_temp))
+		# Update Blynk fermenter setpoints
+		for count, (key, value) in enumerate(cbpi.cache["fermenter"].iteritems(), 1):
+			blynk.virtual_write(count + blynk_fermenter_offset, '{0:.2f}'.format(value.target_temp))
 
-		for idx, value in cbpi.cache["actors"].iteritems():
-			blynk.virtual_write(value.id + blynk_actor_offset, value.state)
+		# Update Blynk actor states and power
+		for count, (key, value) in enumerate(cbpi.cache["actors"].iteritems(), 1):
+			blynk.virtual_write(count + blynk_actor_state_offset, value.state)
+			blynk.virtual_write(count + blynk_actor_power_offset, value.power)
+	else:
+		blynk_auth = cbpi.get_config_parameter("blynk_auth_token", None)
+		blynkAuthEstablish()
