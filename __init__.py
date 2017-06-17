@@ -17,9 +17,11 @@ blynk_fermenter_offset = 50
 blynk_actor_state_offset = 70
 blynk_actor_power_offset = 90
 
-def blynkAuthEstablish():
+def blynkAuth():
 	global blynk	
-	if blynk_auth is not None:
+	if blynk_auth is None:
+		cbpi.notify("Blynk Warning", "No Blynk token specified", type="danger", timeout=None)
+	else:				
 		blynk = BlynkLib.Blynk(blynk_auth)
 		start_new_thread(blynkConnection, ())
 
@@ -33,19 +35,14 @@ def blynkDB():
 		print "INIT BLYNK DB"
 		cbpi.add_config_parameter("blynk_auth_token", None, "text", "Blynk Authentication Token")
 
-def blynkAuthWarning():
-	if blynk_auth is None:
-		cbpi.notify("Blynk Warning", "No Blynk token specified. Please enter your token in settings.", type="danger", timeout=None)
-
 @cbpi.initalizer(order=8045)
 def init(cbpi):
 	cbpi.app.logger.info("INITIALIZE BLYNK PLUGIN")
 	blynkDB()
-	blynkAuthWarning()
-	blynkAuthEstablish()
+	blynkAuth()
 
-@cbpi.backgroundtask(key="blynk_task", interval=3)
-def blynk_task():
+@cbpi.backgroundtask(key="blynk_send_reading", interval=3)
+def blynk_send_reading():
 	if blynk is not None:
 		# Update Blynk last updated field
 		blynk.virtual_write(blynk_last_updated, time.ctime())
@@ -74,6 +71,3 @@ def blynk_task():
 		for count, (key, value) in enumerate(cbpi.cache["actors"].iteritems(), 1):
 			blynk.virtual_write(count + blynk_actor_state_offset, value.state)
 			blynk.virtual_write(count + blynk_actor_power_offset, value.power)
-	else:
-		blynk_auth = cbpi.get_config_parameter("blynk_auth_token", None)
-		blynkAuthEstablish()
