@@ -1,6 +1,6 @@
 # Blynk Plugin for CraftBeerPi 3.0
 
-This plugin is designed to integrate your CraftBeerPi controller with the Blynk service.  Blynk is a platform which allows data to be sent to and retrieved from an online service, and then utilizes mobile apps with drag-and-drop widgets to display the data and interact with the device in real-time.  It is fully customizable; you can pick as much or as little data as you wish to be displayed on the screen.  Because of the level of customazation possible, this is truly a DIY app building process.  There is not a pre-designed interface for which you will start out with, but rather you will have to build your own, or scan a QR code from another user to clone their app. 
+This plugin is designed to integrate your CraftBeerPi controller with the Blynk service.  Blynk is a platform which allows data to be sent to and retrieved from an online service, and then utilizes mobile apps with drag-and-drop widgets to display the data and interact with the device in real-time.  It is fully customizable; you can pick as much or as little data as you wish to be displayed on the screen.  Because of the level of customization possible, this is truly a DIY app building process.  There is not a pre-designed interface for which you will start out with, but rather you will have to build your own, or scan a QR code from another user to clone their app. 
 
 There are apps for iPhone/iPad and Android devices.  The apps are free, but Blynk does offer in-app purchases to add Energy to your account.  The more widgets you add to your app, the more Energy is required, however the starting amount with your free account is usually sufficient to add a handful of widgets before running into this limitation.
 
@@ -44,9 +44,10 @@ To begin using this plugin, two steps are required.  First we will install the m
     - **Text box (at top):**  This is the label that will appear above the widget to let you know what it's used for, so put in a descriptive name like "Boil Kettle" or "Pump".  The name doesn't have to match what the device is named in CraftBeerPi
     - **Color wheel:**  Choose a color to differentiate this widget or catagories of widgets from one another.
     - **Pin:**  This is how Blynk links this widget with data in CraftBeerPi.  See Pin Configuration section below for more info.
-    - **Scale (two boxes that by default have a 0 and 1 in them):**  This will control how the data is scaled by the widget.  The first number should be the lowest you expect the data to go, and the second number should be the highest.  For example, a kettle temp guage could be scaled from 0 to 212 degrees (or 0 to 100 degrees), depending on  
+    - **Scale (two boxes that by default have a 0 and 1 in them):**  This will control how the data is scaled by the widget.  The first number should be the lowest you expect the data to go, and the second number should be the highest.  For example, a kettle temp guage could be scaled from 0 to 212 degrees, or 0 to 100 degrees, depending on whether you're using °F or °C.
     - **Refresh interval:**  It is best to set this to Push, because the Blynk plugin sends data to the Blynk cloud on its own set interval.
-6. Now that your app has been created, it is time to head over to CraftBeerPi to finish the install
+6. Once your widgets are configured, you can click the **Play** button in the upper-right corner.  This will start your app and allow it to start receiving data once we have finished configuration. To make modifications later, you will have to first click the **Stop** button.
+7. Now that your app has been created, it is time to head over to CraftBeerPi to finish the install.
 
 ### Step 2: CraftBeerPi Configuration
 
@@ -60,6 +61,8 @@ To begin using this plugin, two steps are required.  First we will install the m
 The term Pin is used in Blynk to indicate a physical or virtual pin on a hardware device, usually referred to as GPIO.  When a widget has been set to the same Pin that the hardware device is using, the widget will begin displaying the data being sent to Blynk from that device.  To figure out which Pins to use for which Sensors, Kettles, etc. in CraftBeerPi, look at the order in which they appear in the **Hardware** screen of CraftBeerPi, and then add that number to the Offset in the following table.
 
 For example, Sensor #1 in CraftBeerPi will correspond with Pin V11 ( 10 + 1 ).  Kettle #3 Setpoint will correspond with Pin V33 ( 30 + 3 ).
+
+***Note:*** If you set up your Blynk app first and then later delete devices in CraftBeerPi, the numbering will change and you will have to adjust the Pins in Blynk to once again correspond to the correct order of devices in CraftBeerPi.
 
 | CraftBeerPi Name | Blynk Pin(s) | Offset | More Info |
 | ---------------- | ------------ | ------ | --------- |
