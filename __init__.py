@@ -19,7 +19,7 @@ blynk_actor_power_offset = 90
 
 def blynkAuth():
 	global blynk	
-	if blynk_auth is None:
+	if blynk_auth is None or not blynk_auth:
 		cbpi.notify("Blynk Warning", "No Blynk token specified", type="danger", timeout=None)
 	else:				
 		blynk = BlynkLib.Blynk(blynk_auth)
@@ -33,7 +33,7 @@ def blynkDB():
 	blynk_auth = cbpi.get_config_parameter("blynk_auth_token", None)
 	if blynk_auth is None:
 		print "INIT BLYNK DB"
-		cbpi.add_config_parameter("blynk_auth_token", None, "text", "Blynk Authentication Token")
+		cbpi.add_config_parameter("blynk_auth_token", "", "text", "Blynk Authentication Token")
 
 @cbpi.initalizer(order=8045)
 def init(cbpi):
