@@ -298,7 +298,7 @@ class Blynk:
     def disconnect(self):
         self._do_connect = False
 
-    def log(text):
+    def log(self, text):
         filename = "./logs/blynk.log"
         formatted_time = strftime("%Y-%m-%d %H:%M:%S", localtime())
 
