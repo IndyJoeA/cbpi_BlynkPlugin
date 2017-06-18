@@ -24,6 +24,7 @@
 # THE SOFTWARE.
 
 
+from time import localtime, strftime
 import socket
 import struct
 import time
@@ -147,13 +148,13 @@ class Blynk:
                 for param in params:
                     self._vr_pins[pin].write(param)
             else:
-                print("Warning: Virtual write to unregistered pin %d" % pin)
+                self.log("Warning: Virtual write to unregistered pin %d" % pin)
         elif cmd == 'vr':
             pin = int(params.pop(0))
             if pin in self._vr_pins and self._vr_pins[pin].read:
                 self._vr_pins[pin].read()
             else:
-                print("Warning: Virtual read from unregistered pin %d" % pin)
+                self.log("Warning: Virtual read from unregistered pin %d" % pin)
         else:
             raise ValueError("Unknown message cmd: %s" % cmd)
 
@@ -206,7 +207,7 @@ class Blynk:
         self.state = DISCONNECTED
         time.sleep(RECONNECT_DELAY)
         if emsg:
-            print('Error: %s, connection closed' % emsg)
+            self.log('Error: %s, connection closed' % emsg)
 
     def _server_alive(self):
         c_time = int(time.time())
@@ -297,6 +298,13 @@ class Blynk:
     def disconnect(self):
         self._do_connect = False
 
+    def log(text):
+        filename = "./logs/blynk.log"
+        formatted_time = strftime("%Y-%m-%d %H:%M:%S", localtime())
+
+        with open(filename, "a") as file:
+            file.write("%s,%s\n" % (formatted_time, text))
+
     def run(self):
         self._start_time = time.ticks_ms()
         self._task_millis = self._start_time
@@ -316,11 +324,11 @@ class Blynk:
                         self.state = CONNECTING
                         if self._ssl:
                             import ssl
-                            print('SSL: Connecting to %s:%d' % (self._server, self._port))
+                            self.log('SSL: Connecting to %s:%d' % (self._server, self._port))
                             ss = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_SEC)
                             self.conn = ssl.wrap_socket(ss, cert_reqs=ssl.CERT_REQUIRED, ca_certs='/flash/cert/ca.pem')
                         else:
-                            print('TCP: Connecting to %s:%d' % (self._server, self._port))
+                            self.log('TCP: Connecting to %s:%d' % (self._server, self._port))
                             self.conn = socket.socket()
                         self.conn.connect(socket.getaddrinfo(self._server, self._port)[0][4])
                     except:
@@ -329,7 +337,7 @@ class Blynk:
 
                     self.state = AUTHENTICATING
                     hdr = struct.pack(HDR_FMT, MSG_LOGIN, self._new_msg_id(), len(self._token))
-                    print('Blynk connection successful, authenticating...')
+                    self.log('Blynk connection successful, authenticating...')
                     self._send(hdr + self._token, True)
                     data = self._recv(HDR_LEN, timeout=MAX_SOCK_TO)
                     if not data:
@@ -343,7 +351,7 @@ class Blynk:
 
                     self.state = AUTHENTICATED
                     self._send(self._format_msg(MSG_HW_INFO, 'ver', '0.0.1+py', 'h-beat', HB_PERIOD, 'dev', sys.platform))
-                    print('Access granted, happy Blynking!')
+                    self.log('Access granted, happy Blynking!')
                     if self._on_connect:
                         self._on_connect()
                 else:
@@ -383,4 +391,4 @@ class Blynk:
 
             if not self._do_connect:
                 self._close()
-                print('Blynk disconnection requested by the user')
+                self.log('Blynk disconnection requested by the user')
