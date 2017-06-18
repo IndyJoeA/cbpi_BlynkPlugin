@@ -41,8 +41,8 @@ def init(cbpi):
 	blynkDB()
 	blynkAuth()
 
-@cbpi.backgroundtask(key="blynk_send_reading", interval=3)
-def blynk_send_reading():
+@cbpi.backgroundtask(key="blynk_send_values", interval=3)
+def blynk_send_values():
 	if blynk is not None:
 		# Update Blynk last updated field
 		blynk.virtual_write(blynk_last_updated, time.ctime())
@@ -57,7 +57,12 @@ def blynk_send_reading():
 
 		# Update Blynk sensor readings
 		for count, (key, value) in enumerate(cbpi.cache["sensors"].iteritems(), 1):
-			blynk.virtual_write(count + blynk_sensor_offset, '{0:.2f}'.format(cbpi.get_sensor_value(value.id)))
+			# Check if data is already formatted (string) or not (float)
+			if type(value.instance.last_value) is str:
+				formatted_reading = value.instance.last_value
+			if type(value.instance.last_value) is float:
+				formatted_reading = '{0:.2f}'.format(value.instance.last_value)
+			blynk.virtual_write(count + blynk_sensor_offset, formatted_reading)
 
 		# Update Blynk kettle setpoints
 		for count, (key, value) in enumerate(cbpi.cache["kettle"].iteritems(), 1):
