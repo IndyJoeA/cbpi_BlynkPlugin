@@ -26,6 +26,7 @@ def blynkAuth():
 		start_new_thread(blynkConnection, ())
 
 def blynkConnection():
+	time.sleep(5)
 	blynk.run()
 
 def blynkDB():
@@ -44,7 +45,7 @@ def init(cbpi):
 	blynkDB()
 	blynkAuth()
 
-@cbpi.backgroundtask(key="blynk_send_values", interval=3)
+@cbpi.backgroundtask(key="blynk_send_values", interval=2)
 def blynk_send_values():
 	if blynk is not None:
 		# Update Blynk last updated field

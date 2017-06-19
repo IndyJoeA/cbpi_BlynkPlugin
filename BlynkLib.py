@@ -76,8 +76,9 @@ AUTHENTICATED = const(3)
 EAGAIN = const(11)
 
 def sleep_from_until (start, delay):
-    while time.ticks_ms() - start < delay:
-        idle_func()
+    #while time.ticks_ms() - start < delay:
+    #    idle_func()
+    time.sleep(0.5)
     return start + delay
 
 class VrPin:
