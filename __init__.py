@@ -49,23 +49,26 @@ def init(cbpi):
 def blynk_send_values():
 	if blynk is not None:
 		# Update Blynk last updated field
-		blynk.virtual_write(blynk_last_updated, time.ctime())
+		blynk.virtual_write(blynk_last_updated, time.strftime("%H:%M:%S %m/%d/%y", time.localtime()))
 
 		# Update Blynk current step field
 		step = cbpi.cache.get("active_step")
+		step_text = "---"
 		if step is not None:
-			step_text = step.name
-		else:
-			step_text = "---"
+			if step.name is not None and step.name:
+				step_text = step.name
+			if step.timer_end is not None:
+				step_text += " [%s]" % (time.strftime("%H:%M:%S", time.gmtime(step.timer_end - time.time())))
+
 		blynk.virtual_write(blynk_current_step, step_text)
 
 		# Update Blynk sensor readings
 		for count, (key, value) in enumerate(cbpi.cache["sensors"].iteritems(), 1):
-			# Check if data is already formatted (string) or not (float)
-			if type(value.instance.last_value) is str:
-				formatted_reading = value.instance.last_value
+			# Check data type of sensor reading, format if float
 			if type(value.instance.last_value) is float:
 				formatted_reading = '{0:.2f}'.format(value.instance.last_value)
+			else:
+				formatted_reading = value.instance.last_value
 			blynk.virtual_write(count + blynk_sensor_offset, formatted_reading)
 
 		# Update Blynk kettle setpoints
