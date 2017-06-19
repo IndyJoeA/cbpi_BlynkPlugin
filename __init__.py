@@ -20,7 +20,7 @@ blynk_actor_power_offset = 90
 def blynkAuth():
 	global blynk	
 	if blynk_auth is None or not blynk_auth:
-		cbpi.notify("Blynk Warning", "No Blynk token specified", type="danger", timeout=None)
+		cbpi.notify("Blynk Error", "No Blynk Authentication Token specified", type="danger", timeout=None)
 	else:				
 		blynk = BlynkLib.Blynk(blynk_auth)
 		start_new_thread(blynkConnection, ())
@@ -33,7 +33,10 @@ def blynkDB():
 	blynk_auth = cbpi.get_config_parameter("blynk_auth_token", None)
 	if blynk_auth is None:
 		print "INIT BLYNK DB"
-		cbpi.add_config_parameter("blynk_auth_token", "", "text", "Blynk Authentication Token")
+		try:
+			cbpi.add_config_parameter("blynk_auth_token", "", "text", "Blynk Authentication Token")
+		except:
+			cbpi.notify("Blynk Error", "Unable to update database. Update CraftBeerPi and reboot.", type="danger", timeout=None)
 
 @cbpi.initalizer(order=8045)
 def init(cbpi):
