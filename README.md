@@ -9,9 +9,8 @@ From the perspective of CraftBeerPi, you are able to display current temperature
 This initial release of the plugin is read only.  It will allow viewing of all data mentioned above, but will not allow changes to settings or device states to be made.  Turning on pumps or other devices, changing set points, and receiving alerts or notifications is planned for later releases.
 
 For more info, visit the following sites:
-
 - Blynk website: [Blynk.cc](http://www.blynk.cc/)
-
+- Blynk getting started guide: [Blynk.cc/#getting-started-getting-started-with-the-blynk-app](http://docs.blynk.cc/#getting-started-getting-started-with-the-blynk-app)
 - CraftBeerPi website: [CraftBeerPi.com](http://web.craftbeerpi.com/)
 
 ## Screenshots
