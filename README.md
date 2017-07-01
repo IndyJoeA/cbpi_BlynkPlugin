@@ -53,7 +53,7 @@ To begin using this plugin, two steps are required.  First we will install the m
 1. First, make sure you are running the latest version of CraftBeerPi 3.0.  If not, or if you are not sure, you can perform the update by clicking on the **System** menu and then **System**.  Click the **Pull Update** button, and then **Confirm**.  Once you receive a notification that the update was successful, reboot the Raspberry Pi.
 2. Install the Blynk plugin in CraftBeerPi by clicking on the **System** menu and then **Add-on**.  Find the Blynk plugin and click the **Download** button.  When the download is complete, you'll see a notification.  You must now reboot the Raspberry Pi so that the plugin will be loaded into the system.
 3. After the reboot we will need to configure CraftBeerPi to login to your Blynk account.  Click the **System** menu and then **Parameter**.  Select the *blynk_authentication_token* option, and enter your token that you received in an email from Blynk.
-4. Now you will have to reboot CraftBeerPi one last time for the connection between CraftBeerPi and Blynk to be complete.
+4. Within sixty seconds the Blynk plugin will try to establish connection between CraftBeerPi and Blynk.  If it's successful, you will see the device status in the Blynk app change to Online. If not, see the Troubleshooting section at the bottom of this page.
 
 ## Pin Configuration
 
@@ -72,3 +72,9 @@ For example, Sensor #1 in CraftBeerPi will correspond with Pin V11 ( 10 + 1 ).  
 | Fermenter Setpoints | V51 - V70 | 50     | Fermenter temperature set points |
 | Actor States     | V71 - V90    | 70     | The on/off state of actors. Value range: 0 - 1 |
 | Actor Power      | V91 - V109   | 90     | The power level of actors. Value range: 0 - 100 |
+
+## Troubleshooting
+
+If the Blynk plugin encounters any problems while it's running, it will stop and then automatically restart itself in sixty seconds.  This is to try to allow for situations where your internet service may be experiencing issues, or go down completely, so that the Raspberry Pi does not need to be rebooted completely once your service is working again.  Also, after you have first entered your Blynk token, it will try to connect within sixty seconds without having to reboot.
+
+If things are still not working, the first place to check is the log file.  From a terminal window or SSH, type `less ~/craftbeerpi3/logs/blynk.log` and press Enter.  Any connection problems, such as the authentication token being wrong, or the lack of connection with the Blynk Cloud service, should be listed near the bottom of the log.
