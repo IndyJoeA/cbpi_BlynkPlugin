@@ -1,5 +1,5 @@
 from modules import app, cbpi
-from thread import start_new_thread
+import threading
 import BlynkLib
 import logging
 import time
@@ -7,6 +7,7 @@ import time
 # Global Blynk objects
 blynk = None
 blynk_auth = None
+blynk_thread = None
 
 # Virtual Pin configuration
 blynk_last_updated = 0
@@ -18,16 +19,20 @@ blynk_actor_state_offset = 70
 blynk_actor_power_offset = 90
 
 def blynkAuth():
-	global blynk	
+	global blynk
+	global blynk_thread	
 	if blynk_auth is None or not blynk_auth:
-		cbpi.notify("Blynk Error", "No Blynk Authentication Token specified", type="danger", timeout=None)
+		cbpi.notify("Blynk Error", "No Blynk Authentication Token specified", type="danger", timeout=10000)
 	else:				
 		blynk = BlynkLib.Blynk(blynk_auth)
-		start_new_thread(blynkConnection, ())
+		blynk_thread = threading.Thread(name='blynkConnection', target=blynkConnection)
+		blynk_thread.setDaemon(True)
+		time.sleep(2)
+		blynk_thread.start()
 
-def blynkConnection():
-	time.sleep(5)
+def blynkConnection():	
 	blynk.run()
+	blynk.log("Blynk thread has ended")
 
 def blynkDB():
 	global blynk_auth	
@@ -37,13 +42,22 @@ def blynkDB():
 		try:
 			cbpi.add_config_parameter("blynk_auth_token", "", "text", "Blynk Authentication Token")
 		except:
-			cbpi.notify("Blynk Error", "Unable to update database. Update CraftBeerPi and reboot.", type="danger", timeout=None)
+			cbpi.notify("Blynk Error", "Unable to update database. Update CraftBeerPi and reboot.", type="danger", timeout=10000)
 
 @cbpi.initalizer(order=8045)
 def init(cbpi):
 	cbpi.app.logger.info("INITIALIZE BLYNK PLUGIN")
-	blynkDB()
-	blynkAuth()
+
+@cbpi.backgroundtask(key="blynk_check_auth", interval=60)
+def blynk_check_auth():
+	if blynk is not None:
+		if blynk_thread.isAlive() == False:
+			blynk.log("Blynk thread is trying to restart")
+			blynkAuth()
+		pass
+	else:
+		blynkDB()
+		blynkAuth()
 
 @cbpi.backgroundtask(key="blynk_send_values", interval=2)
 def blynk_send_values():
@@ -73,11 +87,13 @@ def blynk_send_values():
 
 		# Update Blynk kettle setpoints
 		for count, (key, value) in enumerate(cbpi.cache["kettle"].iteritems(), 1):
-			blynk.virtual_write(count + blynk_kettle_offset, '{0:.2f}'.format(value.target_temp))
+			if value.target_temp is not None:
+				blynk.virtual_write(count + blynk_kettle_offset, '{0:.2f}'.format(value.target_temp))
 
 		# Update Blynk fermenter setpoints
 		for count, (key, value) in enumerate(cbpi.cache["fermenter"].iteritems(), 1):
-			blynk.virtual_write(count + blynk_fermenter_offset, '{0:.2f}'.format(value.target_temp))
+			if value.target_temp is not None:
+				blynk.virtual_write(count + blynk_fermenter_offset, '{0:.2f}'.format(value.target_temp))
 
 		# Update Blynk actor states and power
 		for count, (key, value) in enumerate(cbpi.cache["actors"].iteritems(), 1):
