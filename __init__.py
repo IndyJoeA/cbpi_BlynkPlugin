@@ -49,7 +49,7 @@ def init(cbpi):
 	cbpi.app.logger.info("INITIALIZE BLYNK PLUGIN")
 
 @cbpi.backgroundtask(key="blynk_check_auth", interval=60)
-def blynk_check_auth():
+def blynk_check_auth(api):
 	if blynk is not None:
 		if blynk_thread.isAlive() == False:
 			blynk.log("Blynk thread is trying to restart")
@@ -60,7 +60,7 @@ def blynk_check_auth():
 		blynkAuth()
 
 @cbpi.backgroundtask(key="blynk_send_values", interval=2)
-def blynk_send_values():
+def blynk_send_values(api):
 	if blynk is not None:
 		# Update Blynk last updated field
 		blynk.virtual_write(blynk_last_updated, time.strftime("%H:%M:%S %m/%d/%y", time.localtime()))
