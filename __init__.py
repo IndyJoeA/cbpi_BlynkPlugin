@@ -80,7 +80,7 @@ def blynk_send_values(api):
 		for count, (key, value) in enumerate(cbpi.cache["sensors"].iteritems(), 1):
 			# Check data type of sensor reading, format if float
 			if type(value.instance.last_value) is float:
-				formatted_reading = '{0:.2f}'.format(value.instance.last_value)
+				formatted_reading = '{0:.3f}'.format(value.instance.last_value)
 			else:
 				formatted_reading = value.instance.last_value
 			blynk.virtual_write(count + blynk_sensor_offset, formatted_reading)
@@ -88,12 +88,12 @@ def blynk_send_values(api):
 		# Update Blynk kettle setpoints
 		for count, (key, value) in enumerate(cbpi.cache["kettle"].iteritems(), 1):
 			if value.target_temp is not None:
-				blynk.virtual_write(count + blynk_kettle_offset, '{0:.2f}'.format(value.target_temp))
+				blynk.virtual_write(count + blynk_kettle_offset, '{0:.3f}'.format(value.target_temp))
 
 		# Update Blynk fermenter setpoints
 		for count, (key, value) in enumerate(cbpi.cache["fermenter"].iteritems(), 1):
 			if value.target_temp is not None:
-				blynk.virtual_write(count + blynk_fermenter_offset, '{0:.2f}'.format(value.target_temp))
+				blynk.virtual_write(count + blynk_fermenter_offset, '{0:.3f}'.format(value.target_temp))
 
 		# Update Blynk actor states and power
 		for count, (key, value) in enumerate(cbpi.cache["actors"].iteritems(), 1):
