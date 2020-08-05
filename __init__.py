@@ -1,6 +1,6 @@
 from modules import app, cbpi
 import threading
-import BlynkLib
+from . import BlynkLib
 import logging
 import time
 
@@ -38,7 +38,7 @@ def blynkDB():
 	global blynk_auth	
 	blynk_auth = cbpi.get_config_parameter("blynk_auth_token", None)
 	if blynk_auth is None:
-		print "INIT BLYNK DB"
+		print("INIT BLYNK DB")
 		try:
 			cbpi.add_config_parameter("blynk_auth_token", "", "text", "Blynk Authentication Token")
 		except:
@@ -77,7 +77,7 @@ def blynk_send_values(api):
 		blynk.virtual_write(blynk_current_step, step_text)
 
 		# Update Blynk sensor readings
-		for count, (key, value) in enumerate(cbpi.cache["sensors"].iteritems(), 1):
+		for count, (key, value) in enumerate(iter(cbpi.cache["sensors"].items()), 1):
 			# Check data type of sensor reading, format if float
 			if type(value.instance.last_value) is float:
 				formatted_reading = '{0:.2f}'.format(value.instance.last_value)
@@ -86,16 +86,16 @@ def blynk_send_values(api):
 			blynk.virtual_write(count + blynk_sensor_offset, formatted_reading)
 
 		# Update Blynk kettle setpoints
-		for count, (key, value) in enumerate(cbpi.cache["kettle"].iteritems(), 1):
+		for count, (key, value) in enumerate(iter(cbpi.cache["kettle"].items()), 1):
 			if value.target_temp is not None:
 				blynk.virtual_write(count + blynk_kettle_offset, '{0:.2f}'.format(value.target_temp))
 
 		# Update Blynk fermenter setpoints
-		for count, (key, value) in enumerate(cbpi.cache["fermenter"].iteritems(), 1):
+		for count, (key, value) in enumerate(iter(cbpi.cache["fermenter"].items()), 1):
 			if value.target_temp is not None:
 				blynk.virtual_write(count + blynk_fermenter_offset, '{0:.2f}'.format(value.target_temp))
 
 		# Update Blynk actor states and power
-		for count, (key, value) in enumerate(cbpi.cache["actors"].iteritems(), 1):
+		for count, (key, value) in enumerate(iter(cbpi.cache["actors"].items()), 1):
 			blynk.virtual_write(count + blynk_actor_state_offset, value.state)
 			blynk.virtual_write(count + blynk_actor_power_offset, value.power)
