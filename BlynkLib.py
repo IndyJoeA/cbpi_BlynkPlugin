@@ -104,12 +104,12 @@ class Terminal:
 		try:
 			out = eval(value)
 			if out != None:
-				print(repr(out))
+				print((repr(out)))
 		except:
 			try:
 				exec(value)
 			except Exception as e:
-				print('Exception:\n  ' + repr(e))
+				print(('Exception:\n  ' + repr(e)))
 
 class Blynk:
 	def __init__(self, token, server='blynk-cloud.com', port=None, connect=True, ssl=False):
@@ -137,7 +137,7 @@ class Blynk:
 		return struct.pack(HDR_FMT, msg_type, self._new_msg_id(), len(data)) + data
 
 	def _handle_hw(self, data):
-		params = list(map(lambda x: x.decode('ascii'), data.split(b'\0')))
+		params = list([x.decode('ascii') for x in data.split(b'\0')])
 		cmd = params.pop(0)
 		if cmd == 'info':
 			pass
